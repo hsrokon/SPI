@@ -2,21 +2,27 @@
 #include <stdint.h>
 
 
-uint8_t spi_communicates(){
-	GPIOA->BSRR = (1<<4+16);//pulling low
-
+uint8_t spi_transfer(uint8_t data){
 	while(!(SPI1->SR & (1<<1)));//Wait until transmit buffer empty
-
-	SPI1->DR = (0xFF);//Sending dummy date to transmit buffer for transmit
-
+	SPI1->DR = data;//Sending byte
 	while(!(SPI1->SR & (1<<0)));//Wait for received buffer not empty flag
 
+	//Reading received byte
+	return (uint8_t) SPI1->DR;//clears received buffer
+}
 
-	//Setting PA4 high by marking end of transmission
-	GPIOA->BSRR = (1<<4);
 
-	//Reading data
-	return (uint8_t) SPI1->DR;
+uint8_t mpu_read_register(uint8_t reg){
+	GPIOA->BSRR = (1<<16+4);//pulling it to low, to wake up mpu
+	spi_transfer(0x80|reg);//0x80=1000 0000, 7th bit = 1 = Read
+	//this first byte sends 8 clock, msb gets sent first, mpu decodes the address, loads value in that address and waits for another byte/8 clock pulses
+	//During this time whatever bits was is mpu's shift reg gets pushed through miso, SPI1->DR receives garbage byte
+
+	uint8_t rx_data = spi_transfer(0xFF);//Pushing dummy byte to gen 8 clock pulses to receive decoded address value from mpu
+
+	while((SPI1->SR & (1<<7)));//Wait until spi is busy
+	GPIOA->BSRR = (1<<4);//Pulling line high (NSS) to mark end of communication
+	return rx_data;
 }
 
 void main(void){
@@ -36,7 +42,7 @@ void main(void){
 	//Setting both SSM SSI and CPOL CPHA to 1, Selecting as a Master
 	SPI1->CR1 |= (1<<6);//SPI enabled
 
-	uint8_t val = spi_communicates();
+	mpu_read_register(0x75);//Reading WHO_AM_I register returns chip id
 
 	while(1){
 
