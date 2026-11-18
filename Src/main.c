@@ -1,4 +1,23 @@
 #include "spi.h"
+#include <stdint.h>
+
+
+uint8_t spi_communicates(){
+	GPIOA->BSRR = (1<<4+16);//pulling low
+
+	while(!(SPI1->SR & (1<<1)));//Wait until transmit buffer empty
+
+	SPI1->DR = (0xFF);//Sending dummy date to transmit buffer for transmit
+
+	while(!(SPI1->SR & (1<<0)));//Wait for received buffer not empty flag
+
+
+	//Setting PA4 high by marking end of transmission
+	GPIOA->BSRR = (1<<4);
+
+	//Reading data
+	return (uint8_t) SPI1->DR;
+}
 
 void main(void){
 
@@ -16,6 +35,8 @@ void main(void){
 	SPI1->CR1 = (3<<8)|(2<<3)|(1<<2)|(3<<0);//setting baud rate for 1MHz, by dividing fpclk/8, Assuming 8MHz APB clock speed
 	//Setting both SSM SSI and CPOL CPHA to 1, Selecting as a Master
 	SPI1->CR1 |= (1<<6);//SPI enabled
+
+	uint8_t val = spi_communicates();
 
 	while(1){
 
