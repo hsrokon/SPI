@@ -15,7 +15,7 @@ uint8_t spi_transfer(uint8_t data){
 }
 
 uint8_t mpu_read_register(uint8_t reg){
-	GPIOA->BSRR = (1<<16+4);//pulling it to low, to wake up mpu
+	GPIOA->BSRR = (1<<20);//pulling PA4 to low, to wake up mpu
 	spi_transfer(0x80|reg);//0x80=1000 0000, 7th bit = 1 = Read
 	//this first byte sends 8 clock, msb gets sent first, mpu decodes the address, loads value in that address and waits for another byte/8 clock pulses
 	//During this time whatever bits was is mpu's shift reg gets pushed through miso, SPI1->DR receives garbage byte
@@ -39,9 +39,8 @@ void spi_init(void){
 
 	//SPI Control Register 1 configuration following (25.3.3) configuring master mode procedure
 	//Resetting is not req. since the following bits are set with equal operator,that also resets whole register including DFF, LSB First, BRR, CPOL CPHA
-	SPI1->CR1 = (3<<8)|(2<<3)|(1<<2)|(3<<0);//setting baud rate for 1MHz, by dividing fpclk/8, Assuming 8MHz APB clock speed
+	SPI1->CR1 = (3<<8)|(5<<3)|(1<<2)|(3<<0);//setting baud rate for 1.125MHz, by dividing fpclk/64, for 72MHz system clock
 	//Setting both SSM SSI and CPOL CPHA to 1, Selecting as a Master
 	SPI1->CR1 |= (1<<6);//SPI enabled
-
 	//chip_id = mpu_read_register(0x75);//Reading WHO_AM_I register, returns chip id
 }

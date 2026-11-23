@@ -1,7 +1,8 @@
 #include "clock.h"
 
 void clock_init_72mhz(void){
-	RCC->CFGR &= ~((0xF<<18)|(3<<16)|(3<<2)|(3<<0));//Reset
+	RCC->CFGR &= ~((0xF<<18)|(3<<16)|(7<<8)|(3<<2)|(3<<0));//Reset
+	RCC->CFGR |= (4<<8);//APB1 HCLK divided by 2
 	RCC->CR |= (1<<16);//HSE on
 
 	FLASH->ACR |= (1<<4);//Prefetch buffer enabled
@@ -16,5 +17,5 @@ void clock_init_72mhz(void){
 	while(!(RCC->CR & (1<<25)));//Waiting for PLL to lock
 	RCC->CFGR |= (2<<0);//PLL selected as system clock
 
-	while(!(RCC->CFGR & (1<<2)));//Checking if HSE used for System clock
+	while((RCC->CFGR & (3U<<2))!= (2U<<2));//Waiting till PLL used for System clock | (3U<<2) is a bitmask used with & to isolate bit 3 and 2 from register for checking
 }

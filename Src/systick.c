@@ -1,4 +1,5 @@
 #include "systick.h"
+#include "clock.h"
 
 #define SYST_CSR (*(volatile uint32_t*)0xE000E010)//SysTick Control and Status Reg.
 #define SYST_RVR (*(volatile uint32_t*)0xE000E014)//,, Reload Value Reg.
@@ -20,7 +21,7 @@ void SysTick_Handler(void){
 
 void delay_ms(uint32_t delay){
 	uint32_t start_time=ms_ticks;
-	while((ms_ticks-start_time)<delay){
+	while((uint32_t)(ms_ticks-start_time)<delay){
 		//Wait till user assigned delay time
 	}
 }
