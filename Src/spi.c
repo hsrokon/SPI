@@ -4,6 +4,16 @@
 
 volatile uint8_t chip_id;//Got output 112(Dec)-0x70-WHO_AM_I
 
+void cs_low(void){
+	GPIOA->BSRR = (1<<20);//pulling PA4 to low, to wake up mpu
+	//For BSRR always have to use direct assignment"=", bcz its write only. |= wastes cpu instructions.
+}
+
+void cs_high(void){
+	while((SPI1->SR & (1<<7)));//Even though RXNE flag occurs, spi clock needs some time for cleanup, so wait until spi is busy
+	GPIOA->BSRR = (1<<4);//Pulling PA4 high (NSS) to mark end of communication
+}
+
 uint8_t spi_transfer(uint8_t data){
 	while(!(SPI1->SR & (1<<1)));//Wait until transmit buffer empty
 	SPI1->DR = data;//Sending byte
@@ -15,15 +25,15 @@ uint8_t spi_transfer(uint8_t data){
 }
 
 uint8_t mpu_read_register(uint8_t reg){
-	GPIOA->BSRR = (1<<20);//pulling PA4 to low, to wake up mpu
+	cs_low();
 	spi_transfer(0x80|reg);//0x80=1000 0000, 7th bit = 1 = Read
 	//this first byte sends 8 clock, msb gets sent first, mpu decodes the address, loads value in that address and waits for another byte/8 clock pulses
 	//During this time whatever bits was is mpu's shift reg gets pushed through miso, SPI1->DR receives garbage byte
 
 	uint8_t rx_data = spi_transfer(0xFF);//Pushing dummy byte to gen 8 clock pulses to receive decoded address value from mpu
 
-	while((SPI1->SR & (1<<7)));//Even though RXNE flag occurs, spi clock needs some time for cleanup, so wait until spi is busy
-	GPIOA->BSRR = (1<<4);//Pulling line high (NSS) to mark end of communication
+	cs_high();
+
 	return rx_data;
 }
 
@@ -35,7 +45,7 @@ void spi_init(void){
 	//Output mode 50MHz push-pull for PA4 chip select pin, so we can manually set it high(3.3) & low/GND
 
 	//Since Hardware select has a problem, we use software select & control NSS pin by controlling corresponding ODR bit through BSRR
-	GPIOA->BSRR = (1<<4);//For BSRR always have to use direct assignment"=", bcz its write only. |= wastes cpu instructions.
+	cs_high();
 
 	//SPI Control Register 1 configuration following (25.3.3) configuring master mode procedure
 	//Resetting is not req. since the following bits are set with equal operator,that also resets whole register including DFF, LSB First, BRR, CPOL CPHA
