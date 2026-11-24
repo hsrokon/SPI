@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 
-volatile uint8_t chip_id;//Got output 112(Dec)-0x70-WHO_AM_I
+//volatile uint8_t chip_id;//Got output 112(Dec)-0x70-WHO_AM_I
 
 void cs_low(void){
 	GPIOA->BSRR = (1<<20);//pulling PA4 to low, to wake up mpu
@@ -24,18 +24,6 @@ uint8_t spi_transfer(uint8_t data){
 	return (uint8_t) SPI1->DR;//Reading RX buffer(DR), automatically clears RXNE flag
 }
 
-uint8_t mpu_read_register(uint8_t reg){
-	cs_low();
-	spi_transfer(0x80|reg);//0x80=1000 0000, 7th bit = 1 = Read
-	//this first byte sends 8 clock, msb gets sent first, mpu decodes the address, loads value in that address and waits for another byte/8 clock pulses
-	//During this time whatever bits was is mpu's shift reg gets pushed through miso, SPI1->DR receives garbage byte
-
-	uint8_t rx_data = spi_transfer(0xFF);//Pushing dummy byte to gen 8 clock pulses to receive decoded address value from mpu
-
-	cs_high();
-
-	return rx_data;
-}
 
 void spi_init(void){
 	RCC->APB2ENR |= (1<<12)|(1<<2); // SPI1 and port A enabled
