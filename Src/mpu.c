@@ -16,7 +16,6 @@ uint8_t mpu_read_reg(uint8_t reg){
 	return rx_data;
 }
 
-
 uint8_t mpu_write_reg(uint8_t reg, uint8_t val){
 	cs_low();
 	spi_transfer(0x7F|reg);// 0x7F=0111 1111, 7th bit =0=write
@@ -27,4 +26,15 @@ uint8_t mpu_write_reg(uint8_t reg, uint8_t val){
 void mpu_init(void){
 	mpu_write_reg(MPU_REG_PWR_MGMT_1, 0x01);//Resetting power management register, waking up chip and configuration auto selecting best avail clock source/PLL
 	delay_ms(10);
+}
+
+void mpu_read_all(mpu_data_t *out_dest){
+
+	uint8_t buffer[14];
+	spi_transfer(0x80 | MPU_REG_ACCEL_XOUT_H);
+	for(uint8_t i; i<14; i++){
+
+	}
+
+
 }
