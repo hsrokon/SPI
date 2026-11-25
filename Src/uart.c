@@ -1,7 +1,7 @@
 #include "uart.h"
 
 void uart_init(void){
-	RCC->APB2ENR |= (1<<14);//USART1 Enabled
+	RCC->APB2ENR |= (1<<14)|(1<<2);//USART1 and port A Enabled
 
 	GPIOA->CRH &= ~(0xFF<<4); //Reset PA10,9
 	GPIOA->CRH |= (0x4B<<4);//PA10 as input float, PA9 Alternate fun push pull 50 MHz output

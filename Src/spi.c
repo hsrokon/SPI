@@ -1,5 +1,4 @@
 #include "spi.h"
-#include <stdint.h>
 
 
 //volatile uint8_t chip_id;//Got output 112(Dec)-0x70-WHO_AM_I
@@ -23,7 +22,6 @@ uint8_t spi_transfer(uint8_t data){
 	//Reading received byte
 	return (uint8_t) SPI1->DR;//Reading RX buffer(DR), automatically clears RXNE flag
 }
-
 
 void spi_init(void){
 	RCC->APB2ENR |= (1<<12)|(1<<2); // SPI1 and port A enabled
