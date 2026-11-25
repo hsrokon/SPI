@@ -16,3 +16,10 @@ void uart_transmit(uint8_t ch){
 
 	USART1->DR=ch;
 }
+
+void uart_send_string(const char *str){
+	while(*str != '\0'){//transmitting until null terminator arrives
+		uart_transmit((uint8_t)(*str));
+		str++;
+	}
+}
