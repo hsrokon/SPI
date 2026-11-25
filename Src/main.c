@@ -12,7 +12,7 @@ void main(void){
 	uart_init();//UART initialization
 
 	mpu_data_t mpu_data;// reserves 14 bytes on stack to store 7 int16_t readings
-	char tx_buffer[128];// reserves 128 consecutive 1 byte slot in ram
+	char tx_buffer[160];// reserves 160 consecutive 1 byte slot in ram
 
 	while(1){
 		mpu_read_all(&mpu_data);//Fetches fresh sensor data

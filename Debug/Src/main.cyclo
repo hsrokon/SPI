@@ -1,3 +1,1 @@
-../Src/main.c:6:9:spi_transfer	3
-../Src/main.c:16:9:mpu_read_register	2
-../Src/main.c:29:6:main	1
+../Src/main.c:8:6:main	1

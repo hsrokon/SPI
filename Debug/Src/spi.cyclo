@@ -1,0 +1,4 @@
+../Src/spi.c:6:6:cs_low	1
+../Src/spi.c:11:6:cs_high	2
+../Src/spi.c:16:9:spi_transfer	3
+../Src/spi.c:26:6:spi_init	1

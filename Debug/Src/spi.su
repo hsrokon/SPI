@@ -1,0 +1,4 @@
+../Src/spi.c:6:6:cs_low	4	static
+../Src/spi.c:11:6:cs_high	4	static
+../Src/spi.c:16:9:spi_transfer	16	static
+../Src/spi.c:26:6:spi_init	8	static

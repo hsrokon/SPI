@@ -5,19 +5,34 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Src/clock.c \
 ../Src/main.c \
+../Src/mpu.c \
+../Src/spi.c \
 ../Src/syscalls.c \
-../Src/sysmem.c 
+../Src/sysmem.c \
+../Src/systick.c \
+../Src/uart.c 
 
 OBJS += \
+./Src/clock.o \
 ./Src/main.o \
+./Src/mpu.o \
+./Src/spi.o \
 ./Src/syscalls.o \
-./Src/sysmem.o 
+./Src/sysmem.o \
+./Src/systick.o \
+./Src/uart.o 
 
 C_DEPS += \
+./Src/clock.d \
 ./Src/main.d \
+./Src/mpu.d \
+./Src/spi.d \
 ./Src/syscalls.d \
-./Src/sysmem.d 
+./Src/sysmem.d \
+./Src/systick.d \
+./Src/uart.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -27,7 +42,7 @@ Src/%.o Src/%.su Src/%.cyclo: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su
+	-$(RM) ./Src/clock.cyclo ./Src/clock.d ./Src/clock.o ./Src/clock.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/mpu.cyclo ./Src/mpu.d ./Src/mpu.o ./Src/mpu.su ./Src/spi.cyclo ./Src/spi.d ./Src/spi.o ./Src/spi.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/systick.cyclo ./Src/systick.d ./Src/systick.o ./Src/systick.su ./Src/uart.cyclo ./Src/uart.d ./Src/uart.o ./Src/uart.su
 
 .PHONY: clean-Src
 

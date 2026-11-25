@@ -1,0 +1,4 @@
+../Src/mpu.c:6:9:mpu_read_reg	1
+../Src/mpu.c:19:6:mpu_write_reg	1
+../Src/mpu.c:26:6:mpu_init	1
+../Src/mpu.c:31:6:mpu_read_all	2
