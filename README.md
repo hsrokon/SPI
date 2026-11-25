@@ -70,7 +70,7 @@ Raw 16-bit signed accelerometer counts (`±2g` default sensitivity, `1g ≈ 1638
 ### 2. Vertical (Upright — Gravity on Y-Axis)
 `accel_y` shifts to `+16224` to `+16368` (`~1g`), while `accel_z` drops close to `0`.
 
-![Vertical Orientation](Screenshotss/Vertical.png)
+![Vertical Orientation](Screenshots/Vertical.png)
 
 ### 3. 45-Degree Tilt (Gravity Split Between Y and Z Axes)
 `accel_y` (`~10140`) and `accel_z` (`~12400`) split the `1g` vector (`√(10140² + 12400²) ≈ 16018` counts).
