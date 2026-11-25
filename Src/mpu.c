@@ -16,9 +16,9 @@ uint8_t mpu_read_reg(uint8_t reg){
 	return rx_data;
 }
 
-uint8_t mpu_write_reg(uint8_t reg, uint8_t val){
+void mpu_write_reg(uint8_t reg, uint8_t val){
 	cs_low();
-	spi_transfer(0x7F|reg);// 0x7F=0111 1111, 7th bit =0=write
+	spi_transfer(0x7F & reg);// 0x7F=0111 1111, 7th bit =0=write, doing & operation clears that first bit to 0
 	spi_transfer(val);//Writing value to our target register
 	cs_high();
 }
@@ -28,13 +28,22 @@ void mpu_init(void){
 	delay_ms(10);
 }
 
-void mpu_read_all(mpu_data_t *out_dest){
+void mpu_read_all(mpu_data_t *out_dest){//out_dest(output destination) is a pointer that holds the mem address of mpu_data_t struct
 
-	uint8_t buffer[14];
+	uint8_t buffer[14];//Taking a buffer of size 14, each size 8 bit
+	cs_low();
 	spi_transfer(0x80 | MPU_REG_ACCEL_XOUT_H);
-	for(uint8_t i; i<14; i++){
-
+	//Want to read and sent first register address and it will make data ready for first register & will help for cont. reg. data fetching
+	for(uint8_t i=0; i<14; i++){
+		buffer[i]=spi_transfer(0xFF);
 	}
+	cs_high();
 
-
+	out_dest->accel_x = (int16_t)(((uint16_t)buffer[0]<<8) | buffer[1]);//ACCEL_XOUT_H[15:8], ACCEL_XOUT_L[7:0]
+	out_dest->accel_y = (int16_t)(((uint16_t)buffer[2]<<8) | buffer[3]);
+	out_dest->accel_z = (int16_t)(((uint16_t)buffer[4]<<8) | buffer[5]);
+	out_dest->temp_raw= (int16_t)(((uint16_t)buffer[6]<<8) | buffer[7]);
+	out_dest->gyro_x = (int16_t)(((uint16_t)buffer[8]<<8) | buffer[9]);
+	out_dest->gyro_y = (int16_t)(((uint16_t)buffer[10]<<8) | buffer[11]);
+	out_dest->gyro_z = (int16_t)(((uint16_t)buffer[12]<<8) | buffer[13]);
 }

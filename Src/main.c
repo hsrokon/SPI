@@ -7,6 +7,7 @@
 void main(void){
 	systick_init();//SysTick & 72MHz clock initialization
 	spi_init();//SPI initialization, port A enable includes here
+	mpu_init();//MPU initialization
 	uart_init();//UART initialization, must be after spi_init, since uart uses port A
 
 	while(1){
